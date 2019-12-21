@@ -1,5 +1,5 @@
 <template>
-  <div id="tab-bar-item" @click="itemClick">
+  <div class="tab-bar-item" @click="itemClick">
     <div class="item-icon" v-show="!isActive">
       <slot name="icon"></slot>
     </div>
@@ -44,7 +44,7 @@ export default {
 </script>
 
 <style>
-#tab-bar-item {
+.tab-bar-item {
   flex: 1;
 }
 .item-icon img,
