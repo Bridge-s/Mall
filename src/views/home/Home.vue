@@ -10,6 +10,7 @@
       :probe-type="3"
       @scroll="contentScroll"
       :pull-up-load="true"
+      @pullingUp="loadMore"
     >
       <home-swiper :banners="banners" />
       <home-recommend :recommends="recommends" />
@@ -112,6 +113,9 @@ export default {
         this.isShowBackTop = false;
       }
     },
+    roadMove() {
+      this.getHomeGoodsdata(this.currentType)
+    },
     /**
      * 网络请求相关的方法
      */
@@ -128,6 +132,9 @@ export default {
         // console.log(res)
         this.goods[type].list.push(...res.data.list);
         this.goods[type].page += 1;
+
+        // 完成上拉加载更多
+        this.$refs.scroll.finishPullUp()
       });
     }
   }
