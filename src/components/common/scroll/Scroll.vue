@@ -51,13 +51,16 @@ export default {
   },
   methods: {
     scrollTo(x, y, time = 500) {
-      this.scroll && this.scrollTo && this.scroll.scrollTo(x, y, time);
+      this.scroll && this.scroll.scrollTo(x, y, time);
     },
     refresh() {
       this.scroll && this.scroll.refresh();
     },
     finishPullUp() {
       this.scroll && this.scroll.finishPullUp()
+    },
+    getScrollY() {
+      return this.scroll ? this.scroll.y : 0
     }
   }
 };

@@ -68,13 +68,24 @@ export default {
       currentType: "pop",
       isShowBackTop: false,
       tabOffsetTop: 0,
-      isTabFixed: false
+      isTabFixed: false,
+      saveY: 0
     };
   },
   computed: {
     showGoods() {
       return this.goods[this.currentType].list;
     }
+  },
+  destroyed() {
+    console.log("home destroyed");
+  },
+  activated() {
+    this.$refs.scroll.scrollTo(0, this.saveY, 500)
+    this.$refs.scroll.refresh()
+  },
+  deactivated() {
+    this.saveY = this.$refs.scroll.getScrollY()
   },
   created() {
     // 1、获取多个数据
@@ -176,7 +187,7 @@ export default {
 .tab-control {
   position: relative;
   z-index: 9;
-  margin-top: -1px
+  margin-top: -1px;
 }
 /*原生滚动条下的吸顶效果*/
 /* .tab-control {
