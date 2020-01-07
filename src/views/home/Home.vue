@@ -41,7 +41,8 @@ import HomeRecommend from "./childComps/HomeRecommend";
 import HomeFeature from "./childComps/HomeFeature";
 
 import { getHomeMultidata, getHomeGoodsdata } from "network/home";
-import { debounce } from "common/utils";
+import { debouce } from "common/utils";
+import { itemListenerMixin }  from "common/mixin";
 
 export default {
   name: "Home",
@@ -55,6 +56,7 @@ export default {
     HomeRecommend,
     HomeFeature
   },
+  mixins: [itemListenerMixin],
   data() {
     return {
       banners: [],
@@ -86,6 +88,9 @@ export default {
   },
   deactivated() {
     this.saveY = this.$refs.scroll.getScrollY()
+
+    // 取消全局事件的监听
+    this.$bus.$off('itemImgLoad', this.itemImgListener)
   },
   created() {
     // 1、获取多个数据
@@ -97,12 +102,6 @@ export default {
     this.getHomeGoodsdata("sell");
   },
   mounted() {
-    const refresh = debounce(this.$refs.scroll.refresh, 500);
-
-    // 1、监听item中图片加载完成
-    this.$bus.$on("itemImageLoad", () => {
-      refresh();
-    });
   },
   methods: {
     /**
