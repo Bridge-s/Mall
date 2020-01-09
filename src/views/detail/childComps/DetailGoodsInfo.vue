@@ -5,15 +5,17 @@
       <div class="desc">{{ detailInfo.desc }}</div>
       <div class="end"></div>
     </div>
-    <div class="info-key"></div>
-    <div class="info-list">
-      <img
-        v-for="(item, index) in detailInfo.detailImage[0].list"
-        :key="index"
-        :src="item"
-        @load="imgLoad"
-        alt=""
-      />
+    <div v-for="(item, index) in detailInfo.detailImage" :key="index">
+      <div class="info-key">{{ item.key }}</div>
+      <div class="info-list">
+        <img
+          v-for="(item, index) in item.list"
+          :key="index"
+          :src="item"
+          @load="imgLoad"
+          alt=""
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -25,7 +27,7 @@ export default {
     detailInfo: {
       type: Object,
       default() {
-        return {}
+        return {};
       }
     }
   },

@@ -6,7 +6,7 @@
     <tab-control
       :titles="titles"
       @tabClick="tabClick"
-      ref="tabControl"
+      ref="topTabControl"
       class="tab-control"
       v-show="isTabFixed"
     />
@@ -120,6 +120,10 @@ export default {
           this.currentType = "sell";
           break;
       }
+
+      // 让两个TabControl的currentIndex保持一致
+      this.$refs.topTabControl.currentIndex = index;
+      this.$refs.tabControl.currentIndex = index;
     },
     backClick() {
       this.$refs.scroll.scrollTo(0, 0);
