@@ -1,12 +1,22 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="detailNav" />
+    <detail-nav-bar
+      class="detail-nav"
+      @titleClick="titleClick"
+      ref="detailNav"
+    />
     <scroll
       class="content"
       ref="scroll"
       :probe-type="3"
       @scroll="contentScroll"
     >
+      <ul>
+        <li v-for="(item, index) in $store.state.cartList" :key="index">
+          {{ item }}
+        </li>
+      </ul>
+
       <detail-swiper :top-images="topImages" />
       <detail-base-info :goods="goods" />
       <detail-shop-info :shops="shops" />
@@ -15,6 +25,8 @@
       <detail-comment-info ref="comment" :commentInfo="commentInfo" />
       <goods-list :goods="recommends" ref="recommend" />
     </scroll>
+    <back-top @click.native="backClick" v-show="isShowBackTop" />
+    <detail-bottom-bar @addCart="addToCart" />
   </div>
 </template>
 
@@ -27,6 +39,7 @@ import DetailGoodsInfo from "./childComps/DetailGoodsInfo";
 import DetailParamInfo from "./childComps/DetailParamInfo";
 import DetailCommentInfo from "./childComps/DetailCommentInfo";
 import GoodsList from "components/content/goods/GoodsList";
+import DetailBottomBar from "./childComps/DetailBottomBar";
 
 import Scroll from "components/common/scroll/Scroll";
 
@@ -38,7 +51,7 @@ import {
   GoodsParam
 } from "network/detail";
 import { debouce } from "common/utils";
-import { itemListenerMixin } from "common/mixin";
+import { itemListenerMixin, backTopMixin } from "common/mixin";
 
 export default {
   name: "Detail",
@@ -51,9 +64,10 @@ export default {
     DetailParamInfo,
     DetailCommentInfo,
     GoodsList,
+    DetailBottomBar,
     Scroll
   },
-  mixins: [itemListenerMixin],
+  mixins: [itemListenerMixin, backTopMixin],
   data() {
     return {
       iid: null,
@@ -116,6 +130,7 @@ export default {
       this.themeTopYs.push(this.$refs.params.$el.offsetTop - 50);
       this.themeTopYs.push(this.$refs.comment.$el.offsetTop - 50);
       this.themeTopYs.push(this.$refs.recommend.$el.offsetTop - 50);
+      this.themeTopYs.push(Number.MAX_VALUE);
 
       console.log(this.themeTopYs);
     }, 100);
@@ -139,18 +154,36 @@ export default {
 
       // 2、positionY和主题中的值进行对比
       let length = this.themeTopYs.length;
-      for (let i = 0; i < length; i++) {
+      for (let i = 0; i < length - 1; i++) {
         if (
           this.currentIndex !== i &&
-          ((i < length - 1 &&
-            positionY >= this.themeTopYs[i] &&
-            positionY < this.themeTopYs[i + 1]) ||
-            (i === length - 1 && positionY >= this.themeTopYs[i]))
+          positionY >= this.themeTopYs[i] &&
+          positionY < this.themeTopYs[i + 1]
         ) {
           this.currentIndex = i;
-          this.$refs.detailNav.currentIndex = this.currentIndex
+          this.$refs.detailNav.currentIndex = this.currentIndex;
         }
       }
+
+      // 3、判断BackTop是否显示
+      if (-position.y > 1000) {
+        this.isShowBackTop = true;
+      } else {
+        this.isShowBackTop = false;
+      }
+    },
+    addToCart() {
+      // 1、获取购物车需要展示的信息
+      const product = {};
+      product.image = this.topImages[0];
+      product.title = this.goods.title;
+      product.desc = this.goods.desc;
+      product.price = this.goods.realPrice;
+      product.iid = this.iid;
+
+      // 2、将商品添加到购物车里
+      // this.$store.commit('addCart', product)
+      this.$store.dispatch("addCart", product);
     }
   }
 };
@@ -169,6 +202,6 @@ export default {
   background-color: #fff;
 }
 .content {
-  height: calc(100% - 44px);
+  height: calc(100% - 44px - 49px);
 }
 </style>
