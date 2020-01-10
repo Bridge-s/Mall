@@ -11,12 +11,6 @@
       :probe-type="3"
       @scroll="contentScroll"
     >
-      <ul>
-        <li v-for="(item, index) in $store.state.cartList" :key="index">
-          {{ item }}
-        </li>
-      </ul>
-
       <detail-swiper :top-images="topImages" />
       <detail-base-info :goods="goods" />
       <detail-shop-info :shops="shops" />
@@ -52,6 +46,8 @@ import {
 } from "network/detail";
 import { debouce } from "common/utils";
 import { itemListenerMixin, backTopMixin } from "common/mixin";
+
+import { mapActions } from "vuex"
 
 export default {
   name: "Detail",
@@ -140,6 +136,7 @@ export default {
     this.$bus.$off("itemImgLoad", this.itemImgListener);
   },
   methods: {
+    ...mapActions(["addCart"]),
     imageLoad() {
       this.$refs.scroll.refresh();
       this.getThemeTopY();
@@ -183,7 +180,13 @@ export default {
 
       // 2、将商品添加到购物车里
       // this.$store.commit('addCart', product)
-      this.$store.dispatch("addCart", product);
+      // this.$store.dispatch("addCart", product).then(res => {
+      //   console.log(res)
+      // })
+
+      this.addCart(product).then(res => {
+        this.$toast.show(res, 1500)
+      })
     }
   }
 };
